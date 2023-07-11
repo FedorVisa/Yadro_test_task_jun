@@ -1,0 +1,3 @@
+100
+5 10 10 10
+C:\Users\Kotozzavrik\CLionProjects\yadro_tt\tmp_paths
