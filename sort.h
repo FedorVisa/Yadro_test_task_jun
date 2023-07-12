@@ -10,11 +10,13 @@
 #include <cstdint>
 #include <string>
 #include <fstream>
+#include "config.hpp"
 
 class sort {
 public:
 
     static void my_merge(std::vector<int32_t>& arr, int32_t left, int32_t right);
+    static std::string external_merge ( std::vector<std::string> tapes, config config_);
 
 };
 

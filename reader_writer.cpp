@@ -75,61 +75,9 @@ std::vector<std::string> reader_writer::read_tape(std::string inputFilename, std
 
 void reader_writer::write_to_tape(std::vector<std::string> tapes, std::string output, tape output_tape, config config_) {
 
-    std::vector<std::fstream> streams;
-    for (const auto &unit: tapes) {
-        std::fstream sorted_stream(unit);
-        streams.push_back(std::move(sorted_stream));
-    }
-
     int value;
-    std::srand(static_cast<unsigned>(std::time(0)));
-    while (tapes.size() > 1) {
-        std::vector<std::string> new_temp_files;
-        for (int i = 0; i < tapes.size(); i += 2) {
-            std::ifstream file1(tapes[i]);
-            std::ifstream file2(tapes[i + 1]);
-            std::string newTempFile =
-                    config_.get_path() + "\\" + "temp_" + std::to_string(std::rand()%1000) +
-                    ".txt";
-            std::ofstream tempOutput(newTempFile);
-            if (!tempOutput) {
-                std::cerr << "File does not exists ";
-                throw yadroException(yadroException::ExceptionType::FileNotFound);
-            }
-            int num1, num2;
-            file1 >> num1;
-            file2 >> num2;
-            while (file1 && file2) {
-                if (num1 <= num2) {
-                    tempOutput << num1 << " ";
-                    file1 >> num1;
-                } else {
-                    tempOutput << num2 << " ";
-                    file2 >> num2;
-                }
-            }
-            while (file1) {
-                tempOutput << num1 << " ";
-                file1 >> num1;
-            }
 
-            while (file2) {
-                tempOutput << num2 << " ";
-                file2 >> num2;
-            }
-            file1.close();
-            file2.close();
-            tempOutput.close();
-            new_temp_files.push_back(newTempFile);
-        }
-        for (const std::string& tempFile : tapes) {
-            std::remove(tempFile.c_str());
-        }
-
-        tapes = new_temp_files;
-    }
-
-    std::fstream sorted( tapes[0] );
+    std::fstream sorted( sort::external_merge(tapes,config_) );
 
     if (!sorted.is_open()) {
         std::cerr << "File does not exists";
